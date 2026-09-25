@@ -1,47 +1,4 @@
---[[
-    ================================================================
-    [ SCRIPT INFORMATION ]
-    Project: Custom Script
-    Author: OYB
-    YouTube: https://www.youtube.com/channel/UCAlXXV1Hbvf7WbfXARuVtiQ
-    
-    [ TERMS AND CONDITIONS ]
-    - You ARE allowed to use and modify this script for your own games.
-    - You ARE NOT allowed to re-upload, redistribute, or claim 
-      ownership of this script.
-    - Removing or altering these credits is strictly prohibited.
-    
-    Copyright (c) 2026 OYB. All rights reserved.
-    ================================================================
-]]
-
--- ⚠️ IMPORTANT: Put this code at the VERY TOP of your Main Script (before obfuscating) ⚠️
-
-local ProtectionConfig = {
-    -- 🔴 CRITICAL: This MUST exactly match the 'Secret' value in your Key System's Config!
-    -- If your Key System has: Secret = "Test"
-    -- Then this must also be: SecretKey = "Test"
-    SecretKey = "sdflkjfdslks@!#dlfjouqljsxnmcbxvx983274$#@dsflksjdf",
-    
-    -- The name of your Hub (shown in the kick message if they try to bypass)
-    HubName = "OpleoniHub"
-}
-
--- Anti-Bypass Logic: Checks if the Key System successfully set the global variable
-if not _G[ProtectionConfig.SecretKey] then
-    local player = game:GetService("Players").LocalPlayer
-    if player then
-        player:Kick("\n🛡️ Unauthorized Execution 🛡️\n\nPlease use the official Key System to run " .. ProtectionConfig.HubName)
-    end
-    return -- Stops the rest of the script from loading!
-end
-
--------------------------------------------------------------------------------
--- 👇 YOUR MAIN SCRIPT CODE STARTS HERE 👇
--------------------------------------------------------------------------------
-
-print(ProtectionConfig.HubName .. " Loaded Successfully!")
---[[ Opleoni Aura v1.4 — Auto Farm + Sprinkler + Dupe Modes + Boost Market Field Selection ]]
+--[[ Opleoni Aura v1.5 — Auto Farm + Sprinkler + Dupe Modes + Boost Market ]]
 
 -- ============================================================
 -- НАСТРОЙКИ
@@ -60,7 +17,7 @@ local STICKER_STACK_INTERVAL    = 40 * 60
 
 -- Boost Market
 local BOOST_MARKET_NAME       = "Boost Market"
-local BOOST_MARKET_INTERVAL   = 30 * 60   -- 30 минут
+local BOOST_MARKET_INTERVAL   = 30 * 60
 local BOOST_MARKET_TICKET     = 50
 local DEBUG_BM                = true
 
@@ -83,10 +40,10 @@ local BOOST_FIELD_LIST = {
     "Rose Field Market Boost",
     "Spider Field Market Boost",
 }
-local selectedBoostField = "Stump Field"
+local selectedBoostField = "Stump Field Market Boost"
 
 local function getBoostBuffName()
-    return selectedBoostField .. " Market Boost"
+    return selectedBoostField
 end
 
 local FIRE_SCAN_RADIUS      = 500
@@ -251,7 +208,6 @@ if Events and not Events._AutoFarmHooked then
     end
 end
 
--- Форсим BoostMarketGui.Init — игра начнёт слушать рынок
 task.spawn(function()
     local ok, err = pcall(function()
         local bmGui = require(ReplicatedStorage.Client.Gui.Gui.BoostMarketGui)
@@ -892,6 +848,7 @@ local function makeDropdown(parent, labelText, items, defaultIndex, onChange)
     valueLabel.Font = FONT_BOLD
     valueLabel.TextSize = 12
     valueLabel.TextXAlignment = Enum.TextXAlignment.Left
+    valueLabel.TextTruncate = Enum.TextTruncate.AtEnd
     valueLabel.Parent = card
 
     local arrow = Instance.new("TextLabel")
@@ -959,6 +916,7 @@ local function makeDropdown(parent, labelText, items, defaultIndex, onChange)
             it.Font = FONT_BOLD
             it.TextSize = 11
             it.TextXAlignment = Enum.TextXAlignment.Left
+            it.TextTruncate = Enum.TextTruncate.AtEnd
             it.ZIndex = 1001
             it.Parent = scroll
             Instance.new("UICorner", it).CornerRadius = UDim.new(0, 4)
@@ -1094,7 +1052,7 @@ local welcomeText = Instance.new("TextLabel")
 welcomeText.Size = UDim2.new(1, -20, 1, 0)
 welcomeText.Position = UDim2.new(0, 14, 0, 0)
 welcomeText.BackgroundTransparency = 1
-welcomeText.Text = "Opleoni Aura v1.4\nBoost Market Field Selection + Sliders"
+welcomeText.Text = "Opleoni Aura v1.5\nBoost Market Full Buff Names"
 welcomeText.TextColor3 = C.textDim
 welcomeText.Font = FONT_BOLD
 welcomeText.TextSize = 11
@@ -1122,14 +1080,15 @@ local function makeStatusRow(parent, labelText)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = row
     local val = Instance.new("TextLabel")
-    val.Size = UDim2.new(0, 130, 1, 0)
-    val.Position = UDim2.new(1, -140, 0, 0)
+    val.Size = UDim2.new(0, 200, 1, 0)
+    val.Position = UDim2.new(1, -210, 0, 0)
     val.BackgroundTransparency = 1
     val.Text = "-"
     val.TextColor3 = C.text
     val.Font = FONT_BOLD
-    val.TextSize = 12
+    val.TextSize = 11
     val.TextXAlignment = Enum.TextXAlignment.Right
+    val.TextTruncate = Enum.TextTruncate.AtEnd
     val.Parent = row
     return val
 end
@@ -1138,7 +1097,7 @@ local statusField       = makeStatusRow(pageHome, "Selected Field")
 local statusCurrent     = makeStatusRow(pageHome, "Current Field")
 local statusAura        = makeStatusRow(pageHome, "Star Aura")
 local statusDupeMode    = makeStatusRow(pageHome, "Dupe Mode")
-local statusBoostField  = makeStatusRow(pageHome, "Boost Field")
+local statusBoostField  = makeStatusRow(pageHome, "Boost Buff")
 local statusTickets     = makeStatusRow(pageHome, "Tickets")
 local statusFire        = makeStatusRow(pageHome, "Fires found")
 local statusFlying      = makeStatusRow(pageHome, "Flying")
@@ -1245,9 +1204,9 @@ end
 makeSection(pageToys, "Sticker Stack & Market")
 makeToggle(pageToys, "AutoStickerStack", "Sticker Stack (40 min)", Toggles)
 makeToggle(pageToys, "AutoBoostMarket", "Boost Market (30 min)", Toggles)
-makeDropdown(pageToys, "Boost Field:", BOOST_FIELD_LIST, 1, function(idx, name)
+makeDropdown(pageToys, "Boost Buff:", BOOST_FIELD_LIST, 1, function(idx, name)
     selectedBoostField = name
-    print("[Opleoni] Boost Field:", name, "-> Buff:", name .. " Market Boost")
+    print("[Opleoni] Boost Buff:", name)
 end)
 
 -- Заглушки
@@ -1561,7 +1520,6 @@ local function requestSummary(name, timeout)
     return boostSummary
 end
 
--- Кулдаун
 local function getBoostMarketCooldown()
     local ok, remain = pcall(function()
         local statTools = require(ReplicatedStorage.Shared.Core.StatTools)
@@ -1575,7 +1533,6 @@ local function getBoostMarketCooldown()
     return 0
 end
 
--- Форсим открытие GUI рынка (IsOpen = true)
 local function forceOpenBoostMarket()
     local bmGui
     local ok = pcall(function()
@@ -1606,7 +1563,6 @@ local function releaseBoostMarket(bmGui, origIsOpen)
 end
 
 local function tryBuyBoostMarket()
-    -- 1) Статы
     local stats
     pcall(function() stats = require(ReplicatedStorage.Client.Systems.ClientStatCache):Get() end)
     if not stats then print("[BM] no stats"); return false end
@@ -1618,14 +1574,12 @@ local function tryBuyBoostMarket()
         return false
     end
 
-    -- 2) Кулдаун
     local cd = getBoostMarketCooldown()
     if cd > 0 then
         print("[BM] skip: cooldown " .. math.floor(cd) .. "s")
         return false
     end
 
-    -- 3) FetchSummary
     local summary = requestSummary(BOOST_MARKET_NAME, 4)
     if not summary then
         print("[BM] no summary for", BOOST_MARKET_NAME)
@@ -1641,7 +1595,6 @@ local function tryBuyBoostMarket()
     end
     if #boosts == 0 then print("[BM] empty market"); return false end
 
-    -- 4) Ищем буст по выбранному полю
     local targetBuff = getBoostBuffName()
     local target = nil
     for _, b in ipairs(boosts) do
@@ -1652,12 +1605,10 @@ local function tryBuyBoostMarket()
         return false
     end
 
-    -- 5) Форсим открытие GUI
     local bmGui, origIsOpen = forceOpenBoostMarket()
     print("[BM] forceOpen:", bmGui ~= nil)
     task.wait(0.2)
 
-    -- 6) Purchase
     print("[BM] >> PurchaseBoost:", target.Buff)
     fireEvent("BoostMarketEvent", {
         Action = "PurchaseBoost",
@@ -1872,13 +1823,13 @@ _G.SetDupeMode = function(idx)
 end
 _G.SetBoostField = function(name)
     selectedBoostField = name
-    print("[BM] Boost Field:", name, "-> Buff:", name .. " Market Boost")
+    print("[BM] Boost Buff:", name)
 end
 _G.ListBoostFields = function()
     for i, n in ipairs(BOOST_FIELD_LIST) do print(i .. ".", n) end
 end
 
-print("[Opleoni Aura] v1.4 loaded!")
+print("[Opleoni Aura] v1.5 loaded!")
 
 task.spawn(mainLoop)
 task.spawn(materialsLoop)
